@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="eng">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        #player {
+            width: 50px;
+            height: 50px;
+            background-color: rgb(24, 115, 224);
+            position: absolute;
+            left: 100px;
+            top: 100px;
+        }
+        #caught {
+            width: 50px;
+            height: 50px;
+            background-color: rgb(224, 24, 24);
+            position: absolute;
+        }
+        #target {
+            width: 40px;
+            height: 40px;
+            background-color: rgb(255, 252, 94);
+            border-radius: 50%;
+            position: absolute;
+            text-align: center;
+            border: 3px solid orange;
+        }
+        #message {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="player"></div>
+    <div id="target">1</div>
+    <div id="message">Очки: 0</div>
+    <div id="caught"></div>
+
+    <script>
+        const player = document.getElementById("player");
+        const target = document.getElementById("target");
+        const message = document.getElementById("message");
+        const caught = document.getElementById("caught");
+
+        let x = 100;
+        let y = 100;
+        const step = 60;
+        let count = 0;
+
+        function moveTarget() {
+            const maxX = window.innerWidth - 40;
+            const maxY = window.innerHeight - 40;
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            target.style.left = randomX + "px";
+            target.style.top = randomY + "px";
+        }
+
+        function moveCaught() {
+            const maxX = window.innerWidth - 50;
+            const maxY = window.innerHeight - 50;
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            caught.style.left = randomX + "px";
+            caught.style.top = randomY + "px";
+        }
+
+        moveCaught();
+        moveTarget();
+
+        function checkCollisionT() {
+            const p = player.getBoundingClientRect();
+            const t = target.getBoundingClientRect();
+
+            if (p.left < t.right && p.right > t.left && p.top < t.bottom && p.bottom > t.top) {
+                count++;
+                message.textContent = "Очки: " + count;
+                moveTarget();
+            }
+        }
+
+        function checkCollisionC() {
+            const p = player.getBoundingClientRect();
+            const c = caught.getBoundingClientRect();
+
+            if (p.left < c.right && p.right > c.left && p.top < c.bottom && p.bottom > c.top) {
+                alert("Проигрыш. Сколько было очков: " + count);
+                // Перезапуск игры
+                count = 0;
+                message.textContent = "Очки: " + count;
+                x = 100;
+                y = 100;
+                player.style.left = x + "px";
+                player.style.top = y + "px";
+                moveCaught();
+                moveTarget();
+            }
+        }
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "ArrowUp") {
+                y -= step;
+            }
+            if (event.key === "ArrowDown") {
+                y += step;
+            }
+            if (event.key === "ArrowLeft") {
+                x -= step;
+            }
+            if (event.key === "ArrowRight") {
+                x += step;
+            }
+
+            player.style.left = x + "px";
+            player.style.top = y + "px";
+
+            checkCollisionT();
+            checkCollisionC();
+        });
+    </script>
+</body>
+</html>
